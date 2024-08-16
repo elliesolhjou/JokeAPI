@@ -5,6 +5,7 @@ import { error } from "console";
 
 const app = express();
 const port = 3000;
+// master key is same as our api key
 const masterKey = "4VGP2DN-6EWM4SJ-N6FGRHV-Z3PR3TT";
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -79,6 +80,19 @@ app.patch('/jokes/:id', (req, res) => {
   res.json(patchedJoke);
 })
 
+//8. DELETE All jokes
+// we need API key to delete whole thing on our database
+// in url bar => /all?key= VGP2DN-6EWM4SJ-N6FGRHV-Z3PR3TT"
+app.delete("/jokes/all", (req, res) =>{
+  const userKey = req.query.key;
+  if (userKey === masterKey){
+    jokes=[];
+    res.sendStatus(200);
+  } else {
+    res.status(404).json({error : 'you are not authorized to take delete all action'})
+  }
+
+})
 //7. DELETE Specific joke
 app.delete("/jokes/:id", (req, res) =>{
   const id = parseInt(req.params.id);
@@ -94,7 +108,6 @@ app.delete("/jokes/:id", (req, res) =>{
   };
 });
 
-//8. DELETE All jokes
 
 app.listen(port, () => {
   console.log(`Successfully started server on port ${port}.`);
